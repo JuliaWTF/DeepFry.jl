@@ -1,0 +1,7 @@
+name = "DeepFry"
+uuid = "760752a8-943b-47af-ae9a-04fdfee5f700"
+authors = ["Théo Galy-Fajou <theo.galyfajou@gmail.com> and contributors"]
+version = "0.1.0"
+
+[compat]
+julia = "1"
