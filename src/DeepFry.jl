@@ -33,7 +33,7 @@ deepfry(img; maxdepth=5) = deepfry(default_rng(), img; maxdepth)
 
 function deepfry(rng::AbstractRNG, img; maxdepth=5)
     for _ in 1:maxdepth
-        name, f = rand(rng, STRUCTURE_FRYING)
+        name, f = rand(rng, rand(rng, [STRUCTURE_FRYING, COLOR_FRYING]))
         @info "running $name"
         img = f(img)
     end
