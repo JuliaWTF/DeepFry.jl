@@ -1,8 +1,9 @@
 module DeepFry
 
 using Colors: HSV, RGB
-using ColorSchemes: prism
+using ColorSchemes: ColorSchemes
 using DitherPunk: Bayer, FloydSteinberg, ClusteredDots, dither
+using ImageConstrastAdjustment
 using ImageFiltering: Kernel, imfilter
 using ImageTransformations: imresize
 using Random: default_rng, AbstractRNG
@@ -16,6 +17,8 @@ const COLOR_FRYING = Dict(
         img = HSV.(getfield.(img, :h), 1.0, getfield.(img, :v))
         RGB.(img)
     end,
+    "equalizing contrast" => img -> adjust_histogram(img, Equalization(nbins=4));
+    "stretching constract" => img -> adjust_histogram(img, ContrastStretching(t-2.0, slope=0.5))
 )
 const STRUCTURE_FRYING = Dict(
     "dithering" => img -> dither(img, Bayer(3)),
