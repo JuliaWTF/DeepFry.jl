@@ -1,0 +1,5 @@
+[deps]
+DeepFry = "760752a8-943b-47af-ae9a-04fdfee5f700"
+JuliaSyntax = "70703baa-626e-46a2-a12c-08ffd08c73b4"
+ModuleInfo = "3c3ff5e7-c68c-4a09-80d1-9526a1e9878a"
+Pollen = "c88717ad-5130-4874-a664-5a9aba5ec443"
