@@ -3,6 +3,7 @@ module DeepFry
 using Colors: HSV, RGB
 using ColorSchemes: ColorSchemes
 using DitherPunk: Bayer, FloydSteinberg, ClusteredDots, dither
+using Distributions
 using LinearAlgebra
 using ImageContrastAdjustment
 using ImageFiltering: Kernel, imfilter
@@ -33,8 +34,9 @@ STRUCTURE_FRYING = OrderedDict(
         r = rand(rng, 4:20)
         imresize(imresize(img, ratio = 1/r), ratio=r)
     end,
-    "Laplacian filter" => (rng, img) -> imfilter(img, Kernel.Laplacian()),
-    "Gaussian filtering" => (rng, img) -> imfilter(img, Kernel.gaussian(rand(rng, 1:3))),
+    "Laplacian filtering" => (rng, img) -> imfilter(img, Kernel.laplacian2d(rand(rng, 0:3))),
+    "Gaussian filtering" => (rng, img) -> imfilter(img, Kernel.gaussian(rand(rng, 1:5))),
+    "Gabor filtering" => (rng, img) -> imfilter(img, Kernel.gabor(rand(rng, truncated(Poisson(3.0), 1, Inf)), rand(rng, truncated(Poisson(3.0), 1, Inf)), rand(rng, Gamma(1, 5)), rand(rng, Gamma(2, 5)), 1.0, rand(rng, Exponential(0.1)), rand(rng, Gamma()))),
     "swirling" => (rng, img) -> swirl(img, 0, 10, minimum(size(img)) ÷ 2)
 )
 
