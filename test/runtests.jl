@@ -4,6 +4,7 @@ using TestImages
 using ImageShow
 
 @testset "DeepFry.jl" begin
+    img = TestImages.testimage("mountainstream")
     # Write your tests here.
 end
 
