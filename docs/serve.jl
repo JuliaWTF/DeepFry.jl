@@ -16,7 +16,7 @@ once before serving.
 using Pollen
 
 project = include("project.jl")
-
+@info "Project created"
 
 Pollen.serve(
     project;

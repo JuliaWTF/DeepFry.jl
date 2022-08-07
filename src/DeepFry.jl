@@ -37,7 +37,9 @@ STRUCTURE_FRYING = OrderedDict(
     "Laplacian filtering" => (rng, img) -> imfilter(img, Kernel.laplacian2d(rand(rng, 0:3))),
     "Gaussian filtering" => (rng, img) -> imfilter(img, Kernel.gaussian(rand(rng, 1:5))),
     "Gabor filtering" => (rng, img) -> imfilter(img, Kernel.gabor(rand(rng, truncated(Poisson(3.0), 1, Inf)), rand(rng, truncated(Poisson(3.0), 1, Inf)), rand(rng, Gamma(1, 5)), rand(rng, Gamma(2, 5)), 1.0, rand(rng, Exponential(0.1)), rand(rng, Gamma()))),
-    "swirling" => (rng, img) -> swirl(img, 0, 10, minimum(size(img)) ÷ 2)
+    "swirling" => (rng, img) -> swirl(img, 0, 10, rand(rng, Poisson(minimum(size(img)) ÷ 2))),
+    "Gaussian bubbling" => (rng, img) -> bubble(img, rand(rng, Gamma(2.0, 1.0))),
+    "Laplace bubbling" => (rng, img) -> sharp_bubble(img, rand(rng, Gamma(2.0, 1.0))),
 )
 
 deepfry(img; maxdepth=5) = deepfry(default_rng(), img; maxdepth)
@@ -48,6 +50,9 @@ function deepfry(rng::AbstractRNG, img; maxdepth=5)
         name, f = rand(rng, rand(rng, [STRUCTURE_FRYING, COLOR_FRYING]))
         @info "running $name"
         img = f(rng, img)
+    end
+    if length(unique(img)) < 3
+        @info "Your image got completely burned, try again"
     end
     img
 end
