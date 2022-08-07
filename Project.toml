@@ -15,4 +15,10 @@ Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [compat]
 Colors = "0.12"
+ColorSchemes = "3"
+DitherPunk = "3"
+ImageContrastAdjustment = "0.3"
+ImageCore = "0.9"
+ImageFiltering = "0.7"
+ImageTransformations = "0.9"
 julia = "1"
