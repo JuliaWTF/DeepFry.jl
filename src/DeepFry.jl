@@ -8,6 +8,7 @@ using ImageContrastAdjustment
 using ImageFiltering: Kernel, imfilter
 using ImageTransformations: imresize, warp
 using OffsetArrays
+using OrderedCollections: OrderedDict
 using Random: default_rng, AbstractRNG
 using StaticArrays
 export deepfry, nuke
@@ -15,7 +16,7 @@ export deepfry, nuke
 include("warping.jl")
 
 const prism = ColorSchemes.prism[1:10]
-COLOR_FRYING = Dict(
+COLOR_FRYING = OrderedDict(
     "max saturation" => (rng, img) -> begin
         img = HSV.(img)
         img = HSV.(getfield.(img, :h), rand(rng) * 0.2 + 0.8, getfield.(img, :v))
@@ -23,10 +24,10 @@ COLOR_FRYING = Dict(
     end,
     "equalizing contrast" => (rng, img) -> adjust_histogram(img, Equalization(nbins=rand(rng, 2:10))),
     "stretching constract" => (rng, img) -> adjust_histogram(img, ContrastStretching(t=3 * rand(rng), slope=rand(rng))),
-)
-STRUCTURE_FRYING = Dict(
-    "dithering" => (rng, img) -> dither(img, Bayer(rand(1:3))),
     "color dithering" => (rng, img) -> dither(img, FloydSteinberg(), prism),
+)
+STRUCTURE_FRYING = OrderedDict(
+    "dithering" => (rng, img) -> dither(img, Bayer(rand(1:3))),
     "dot clustering" => (rng, img) -> dither(img, ClusteredDots()),
     "pixelize" => (rng, img) -> begin
         r = rand(rng, 4:20)
@@ -34,7 +35,7 @@ STRUCTURE_FRYING = Dict(
     end,
     "Laplacian filter" => (rng, img) -> imfilter(img, Kernel.Laplacian()),
     "Gaussian filtering" => (rng, img) -> imfilter(img, Kernel.gaussian(rand(rng, 1:3))),
-    "swirling" => (rng, img) -> swirl(img, 10, 5, 10)
+    "swirling" => (rng, img) -> swirl(img, 0, 10, minimum(size(img)) ÷ 2)
 )
 
 deepfry(img; maxdepth=5) = deepfry(default_rng(), img; maxdepth)
