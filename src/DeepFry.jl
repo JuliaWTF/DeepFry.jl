@@ -3,12 +3,15 @@ module DeepFry
 using Colors: HSV, RGB
 using ColorSchemes: ColorSchemes
 using DitherPunk: Bayer, FloydSteinberg, ClusteredDots, dither
-using ImageConstrastAdjustment
+using ImageContrastAdjustment
 using ImageFiltering: Kernel, imfilter
-using ImageTransformations: imresize
+using ImageTransformations: imresize, warp
+using OffsetArrays
 using Random: default_rng, AbstractRNG
-export deepfry
+using StaticArrays
+export deepfry, nuke
 
+include("warping.jl")
 
 const prism = ColorSchemes.prism[1:10]
 const COLOR_FRYING = Dict(
@@ -17,19 +20,21 @@ const COLOR_FRYING = Dict(
         img = HSV.(getfield.(img, :h), 1.0, getfield.(img, :v))
         RGB.(img)
     end,
-    "equalizing contrast" => img -> adjust_histogram(img, Equalization(nbins=4));
-    "stretching constract" => img -> adjust_histogram(img, ContrastStretching(t-2.0, slope=0.5))
+    "equalizing contrast" => img -> adjust_histogram(img, Equalization(nbins=4)),
+    "stretching constract" => img -> adjust_histogram(img, ContrastStretching(t=2.0, slope=0.5)),
 )
 const STRUCTURE_FRYING = Dict(
     "dithering" => img -> dither(img, Bayer(3)),
-    "color dithering" => img -> dither(img, FloydSteinberg(), prism[1:10]),
+    "color dithering" => img -> dither(img, FloydSteinberg(), prism),
     "dot clustering" => img -> dither(img, ClusteredDots()),
     "pixelize" => img -> imresize(imresize(img, ratio = 1/10), ratio=10),
     "Laplacian filter" => img -> imfilter(img, Kernel.Laplacian()),
     "Gaussian filtering" => img -> imfilter(img, Kernel.gaussian(3)),
+    "swirling" => img -> swirl(img, 10, 5, 100)
 )
 
 deepfry(img; maxdepth=5) = deepfry(default_rng(), img; maxdepth)
+nuke(img) = nuke(default_rng(), img)
 
 function deepfry(rng::AbstractRNG, img; maxdepth=5)
     for _ in 1:maxdepth
@@ -40,5 +45,6 @@ function deepfry(rng::AbstractRNG, img; maxdepth=5)
     img
 end
 
+nuke(rng::AbstractRNG, img) = deepfry(rng, img; maxdepth=10)
 
 end
