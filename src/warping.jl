@@ -2,16 +2,16 @@
 function swirl(img, rotation, strength, radius)
     x0 = Tuple(rand(CartesianIndices(img)))
 
-    r = log(2) * radius /5
+    r = log(2) * radius / 5
 
-    function swirl_map(x::SVector{N}) where N
+    function swirl_map(x::SVector{N}) where {N}
         xd = x .- x0
         ρ = norm(xd)
         θ = atan(reverse(xd)...)
 
         # Note that `x == x0 .+ ρ .* reverse(sincos(θ))`
         # swirl adds more rotations to θ based on the distance to center point
-        θ̃ = θ + rotation + strength * exp(-ρ/r)
+        θ̃ = θ + rotation + strength * exp(-ρ / r)
 
         SVector{N}(x0 .+ ρ .* reverse(sincos(θ̃)))
     end
@@ -20,7 +20,7 @@ function swirl(img, rotation, strength, radius)
 end
 
 
-function bubble(img, factor=1.5)
+function bubble(img, factor = 1.5)
     x0 = Tuple(rand(CartesianIndices(img)))
     function bubble_map(x::SVector{N}) where {N}
         xd = x .- x0
@@ -30,7 +30,7 @@ function bubble(img, factor=1.5)
     warp(img, bubble_map, axes(img))
 end
 
-function vwarp(img, factor=1.5)
+function vwarp(img, factor = 1.5)
     x0 = Tuple(rand(CartesianIndices(img)))
     function bubble_map(x::SVector{N}) where {N}
         xd = x .- x0
@@ -40,7 +40,7 @@ function vwarp(img, factor=1.5)
     warp(img, bubble_map, axes(img))
 end
 
-function hwarp(img, factor=1.5)
+function hwarp(img, factor = 1.5)
     x0 = Tuple(rand(CartesianIndices(img)))
     function bubble_map(x::SVector{N}) where {N}
         xd = x .- x0
@@ -50,7 +50,7 @@ function hwarp(img, factor=1.5)
     warp(img, bubble_map, axes(img))
 end
 
-function sharp_bubble(img, factor=1.5)
+function sharp_bubble(img, factor = 1.5)
     x0 = Tuple(rand(CartesianIndices(img)))
     function bubble_map(x::SVector{N}) where {N}
         xd = x .- x0

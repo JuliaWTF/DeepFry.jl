@@ -19,10 +19,4 @@ project = include("project.jl")
 Pollen.rewritesources!(project)
 
 @info "Writing to disk at \"$DIR\"..."
-Pollen.build(
-    FileBuilder(
-        JSONFormat(),
-        DIR,
-    ),
-    project,
-)
+Pollen.build(FileBuilder(JSONFormat(), DIR), project)

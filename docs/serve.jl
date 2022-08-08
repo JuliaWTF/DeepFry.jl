@@ -22,5 +22,5 @@ Pollen.serve(
     project;
     lazy = get(ENV, "POLLEN_LAZY", "false") == "true",
     port = Base.parse(Int, get(ENV, "POLLEN_PORT", "8000")),
-    format = JSONFormat()
+    format = JSONFormat(),
 )
