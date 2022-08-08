@@ -30,6 +30,26 @@ function bubble(img, factor=1.5)
     warp(img, bubble_map, axes(img))
 end
 
+function vwarp(img, factor=1.5)
+    x0 = Tuple(rand(CartesianIndices(img)))
+    function bubble_map(x::SVector{N}) where {N}
+        xd = x .- x0
+        d = first(xd)
+        SVector{N}(x0 .+ (exp(-abs2(factor * d / first(size(img)))) * first(xd), last(xd)))
+    end
+    warp(img, bubble_map, axes(img))
+end
+
+function hwarp(img, factor=1.5)
+    x0 = Tuple(rand(CartesianIndices(img)))
+    function bubble_map(x::SVector{N}) where {N}
+        xd = x .- x0
+        d = last(xd)
+        SVector{N}(x0 .+ (first(xd), exp(-abs(factor * d / last(size(img)))) * last(xd)))
+    end
+    warp(img, bubble_map, axes(img))
+end
+
 function sharp_bubble(img, factor=1.5)
     x0 = Tuple(rand(CartesianIndices(img)))
     function bubble_map(x::SVector{N}) where {N}
