@@ -36,9 +36,9 @@ COLOR_FRYING = OrderedDict(
 STRUCTURE_FRYING = OrderedDict(
     "dithering" => (rng, img) -> dither(img, Bayer(rand(1:3))),
     "dot clustering" => (rng, img) -> dither(img, ClusteredDots()),
-    "pixelize" => (rng, img) -> begin
-        r = rand(rng, 4:20)
-        imresize(imresize(img, ratio = 1 / r), ratio = r)
+    "pixelizing" => (rng, img) -> begin
+        s = size(img)
+        imresize(imresize(img, ratio = 1 / rand(rng, 4:20)), s)
     end,
     "Laplacian filtering" =>
         (rng, img) -> imfilter(img, Kernel.laplacian2d(rand(rng, 0:3))),
