@@ -26,11 +26,11 @@ COLOR_FRYING = OrderedDict(
         end,
     "equalizing contrast" =>
         (rng, img) -> adjust_histogram(img, Equalization(nbins = rand(rng, 2:10))),
-    "stretching constract" =>
-        (rng, img) -> adjust_histogram(
-            img,
-            ContrastStretching(t = 3 * rand(rng), slope = rand(rng)),
-        ),
+    # "stretching constract" =>
+    #     (rng, img) -> adjust_histogram(
+    #         img,
+    #         ContrastStretching(t = 3 * rand(rng), slope = rand(rng)),
+    #     ),
     "color dithering" => (rng, img) -> dither(img, FloydSteinberg(), prism),
 )
 STRUCTURE_FRYING = OrderedDict(
@@ -58,26 +58,39 @@ STRUCTURE_FRYING = OrderedDict(
             ),
         ),
     "swirling" =>
-        (rng, img) -> swirl(img, 0, 10, rand(rng, Poisson(minimum(size(img)) ÷ 2))),
-    "Gaussian bubbling" => (rng, img) -> bubble(img, rand(rng, Gamma(2.0, 1.0))),
-    "Laplace bubbling" => (rng, img) -> sharp_bubble(img, rand(rng, Gamma(2.0, 1.0))),
+        (rng, img) -> swirl(rng, img, 0, 10, rand(rng, Poisson(minimum(size(img)) ÷ 2))),
+    "Gaussian bubbling" => (rng, img) -> bubble(rng, img, rand(rng, Gamma(2.0, 1.0))),
+    "Laplace bubbling" => (rng, img) -> sharp_bubble(rng, img, rand(rng, Gamma(1.5, 1.0))),
 )
 
-deepfry(img; maxdepth = 5) = deepfry(default_rng(), img; maxdepth)
+FRYING = [STRUCTURE_FRYING, COLOR_FRYING]
+
+deepfry(img; madness::Int = 5, nostalgia::Bool = false) =
+    deepfry(default_rng(), img; madness, nostalgia)
 nuke(img) = nuke(default_rng(), img)
 
-function deepfry(rng::AbstractRNG, img; maxdepth = 5)
-    for _ = 1:maxdepth
-        name, f = rand(rng, rand(rng, [STRUCTURE_FRYING, COLOR_FRYING]))
+function deepfry(rng::AbstractRNG, img; madness::Int = 5, nostalgia::Bool = false)
+    if nostalgia
+        img_evol = Matrix{RGB{Float64}}[copy(img)]
+    end
+    for _ = 1:madness
+        name, f = rand(rng, FRYING[rand(rng, Categorical([0.8, 0.2]))])
         @info "running $name"
         img = f(rng, img)
+        if nostalgia
+            push!(img_evol, copy(img))
+        end
     end
     if length(unique(img)) < 3
         @info "Your image got completely burned, try again"
     end
-    img
+    if nostalgia
+        return img, img_evol
+    else
+        return img
+    end
 end
 
-nuke(rng::AbstractRNG, img) = deepfry(rng, img; maxdepth = 10)
+nuke(rng::AbstractRNG, img) = deepfry(rng, img; madness = 10, nostalgia = false)
 
 end

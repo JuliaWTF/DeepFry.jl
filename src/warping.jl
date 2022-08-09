@@ -1,6 +1,6 @@
 # From ImageTransformations example
-function swirl(img, rotation, strength, radius)
-    x0 = Tuple(rand(CartesianIndices(img)))
+function swirl(rng::AbstractRNG, img, rotation::Real, strength::Real, radius::Real)
+    x0 = Tuple(rand(rng, CartesianIndices(img)))
 
     r = log(2) * radius / 5
 
@@ -20,8 +20,8 @@ function swirl(img, rotation, strength, radius)
 end
 
 
-function bubble(img, factor = 1.5)
-    x0 = Tuple(rand(CartesianIndices(img)))
+function bubble(rng::AbstractRNG, img, factor::Real = 1.5)
+    x0 = Tuple(rand(rng, CartesianIndices(img)))
     function bubble_map(x::SVector{N}) where {N}
         xd = x .- x0
         d = norm(xd)
@@ -30,8 +30,8 @@ function bubble(img, factor = 1.5)
     warp(img, bubble_map, axes(img))
 end
 
-function vwarp(img, factor = 1.5)
-    x0 = Tuple(rand(CartesianIndices(img)))
+function vwarp(rng::AbstractRNG, img, factor::Real = 1.5)
+    x0 = Tuple(rand(rng, CartesianIndices(img)))
     function bubble_map(x::SVector{N}) where {N}
         xd = x .- x0
         d = first(xd)
@@ -40,8 +40,8 @@ function vwarp(img, factor = 1.5)
     warp(img, bubble_map, axes(img))
 end
 
-function hwarp(img, factor = 1.5)
-    x0 = Tuple(rand(CartesianIndices(img)))
+function hwarp(rng::AbstractRNG, img, factor::Real = 1.5)
+    x0 = Tuple(rand(rng, CartesianIndices(img)))
     function bubble_map(x::SVector{N}) where {N}
         xd = x .- x0
         d = last(xd)
@@ -50,8 +50,8 @@ function hwarp(img, factor = 1.5)
     warp(img, bubble_map, axes(img))
 end
 
-function sharp_bubble(img, factor = 1.5)
-    x0 = Tuple(rand(CartesianIndices(img)))
+function sharp_bubble(rng::AbstractRNG, img, factor::Real = 1.2)
+    x0 = Tuple(rand(rng, CartesianIndices(img)))
     function bubble_map(x::SVector{N}) where {N}
         xd = x .- x0
         d = norm(xd)
