@@ -3,24 +3,32 @@ using Test
 using TestImages
 using ImageShow
 using MosaicViews
-using Random: default_rng
+using Random: MersenneTwister, default_rng
 
 @testset "DeepFry.jl" begin
     img = TestImages.testimage("mountainstream")
     @testset "Test structure frying" begin
         for (name, f) in DeepFry.STRUCTURE_FRYING
-            @test_nowarn f(default_rng(), img)
+            new_img = f(default_rng(), img)
+            if any(isnan, new_img)
+                error(name)
+            end
         end
     end
     @testset "Test color frying" begin
         for (name, f) in DeepFry.COLOR_FRYING
-            @test_nowarn f(default_rng(), img)
+            new_img = f(default_rng(), img)
+            if any(isnan, new_img)
+                error(name)
+            end
         end
     end
 end
 
-
 img = TestImages.testimage("mountainstream")
+DeepFry.swirl(default_rng(), img)
+
+
 deepfry(img)
 
 # mosaicview(pushfirst!([f(default_rng(), img) for (n, f) in pairs(DeepFry.STRUCTURE_FRYING)], img);nrow=2, fillvalue=colorant"white")

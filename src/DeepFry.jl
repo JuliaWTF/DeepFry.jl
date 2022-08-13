@@ -8,6 +8,7 @@ using LinearAlgebra
 using ImageContrastAdjustment
 using ImageFiltering: Kernel, imfilter
 using ImageTransformations: imresize, warp
+using MosaicViews: mosaicview
 using OffsetArrays
 using OrderedCollections: OrderedDict
 using Random: default_rng, AbstractRNG
@@ -77,6 +78,10 @@ function deepfry(rng::AbstractRNG, img; madness::Int = 5, nostalgia::Bool = fals
         name, f = rand(rng, FRYING[rand(rng, Categorical([0.8, 0.2]))])
         @info "running $name"
         img = f(rng, img)
+        nans = findall(isnan, img)
+        if !isempty(nans) # If we got some NaN replace with some color noise
+            img[nans] .= rand.(eltype(img))
+        end
         if nostalgia
             push!(img_evol, copy(img))
         end
@@ -85,10 +90,9 @@ function deepfry(rng::AbstractRNG, img; madness::Int = 5, nostalgia::Bool = fals
         @info "Your image got completely burned, try again"
     end
     if nostalgia
-        return img, img_evol
-    else
-        return img
+        display(mosaicview(img_evol; nrow=3))
     end
+    return img
 end
 
 nuke(rng::AbstractRNG, img) = deepfry(rng, img; madness = 10, nostalgia = false)
