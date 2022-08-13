@@ -21,17 +21,13 @@ const prism = ColorSchemes.prism[1:10]
 COLOR_FRYING = OrderedDict(
     "max saturation" =>
         (rng, img) -> begin
+            T = eltype(img)
             img = HSV.(img)
             img = HSV.(getfield.(img, :h), rand(rng) * 0.2 + 0.8, getfield.(img, :v))
-            RGB.(img)
+            T.(img)
         end,
     "equalizing contrast" =>
         (rng, img) -> adjust_histogram(img, Equalization(nbins = rand(rng, 2:10))),
-    # "stretching constract" =>
-    #     (rng, img) -> adjust_histogram(
-    #         img,
-    #         ContrastStretching(t = 3 * rand(rng), slope = rand(rng)),
-    #     ),
     "color dithering" => (rng, img) -> dither(img, FloydSteinberg(), prism),
 )
 STRUCTURE_FRYING = OrderedDict(

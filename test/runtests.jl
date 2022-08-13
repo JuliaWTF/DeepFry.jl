@@ -9,17 +9,21 @@ using Random: MersenneTwister, default_rng
     img = TestImages.testimage("mountainstream")
     @testset "Test structure frying" begin
         for (name, f) in DeepFry.STRUCTURE_FRYING
-            new_img = f(default_rng(), img)
-            if any(isnan, new_img)
-                error(name)
+            @testset "Effect $name" begin
+                new_img = f(default_rng(), img)
+                @test size(new_img) == size(img)
+                @test eltype(new_img) == eltype(img)
+                @test all(!isnan, new_img)
             end
         end
     end
     @testset "Test color frying" begin
         for (name, f) in DeepFry.COLOR_FRYING
-            new_img = f(default_rng(), img)
-            if any(isnan, new_img)
-                error(name)
+            @testset "Effect $name" begin
+                new_img = f(default_rng(), img)
+                @test size(new_img) == size(img)
+                @test eltype(new_img) == eltype(img)
+                @test all(!isnan, new_img)
             end
         end
     end
