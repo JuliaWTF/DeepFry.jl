@@ -1,6 +1,7 @@
 module DeepFry
 
-using Colors: HSV, RGB
+using CoherentNoise
+using Colors: Gray, HSV, RGB
 using ColorSchemes: ColorSchemes
 using DitherPunk: Bayer, FloydSteinberg, ClusteredDots, dither
 using Distributions
