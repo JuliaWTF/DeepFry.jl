@@ -8,7 +8,7 @@ using Distributions
 using LinearAlgebra
 using ImageContrastAdjustment
 using ImageFiltering: Kernel, imfilter
-using ImageTransformations: imresize, warp
+using ImageTransformations: imresize, warp, center
 using MosaicViews: mosaicview
 using OffsetArrays
 using OrderedCollections: OrderedDict
