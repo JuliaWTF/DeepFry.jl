@@ -17,6 +17,7 @@ using StaticArrays
 export deepfry, nuke
 
 include("warping.jl")
+include("noise_warp.jl")
 
 const prism = ColorSchemes.prism[1:10]
 COLOR_FRYING = OrderedDict(
