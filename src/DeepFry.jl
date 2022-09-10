@@ -1,8 +1,9 @@
 module DeepFry
 
 using CoherentNoise
-using Colors: Gray, HSV, RGB
+using Colors: Colors, Gray, HSV, RGB, mapc
 using ColorSchemes: ColorSchemes
+using ColorVectorSpace
 using DitherPunk: Bayer, FloydSteinberg, ClusteredDots, dither
 using Distributions
 using LinearAlgebra
@@ -12,12 +13,13 @@ using ImageTransformations: imresize, warp, center
 using MosaicViews: mosaicview
 using OffsetArrays
 using OrderedCollections: OrderedDict
-using Random: default_rng, AbstractRNG
+using Random: default_rng, AbstractRNG, randexp
 using StaticArrays
 export deepfry, nuke
 
 include("warping.jl")
 include("noise_warp.jl")
+include("standard_fry.jl")
 
 const prism = ColorSchemes.prism[1:10]
 COLOR_FRYING = OrderedDict(
@@ -64,11 +66,7 @@ STRUCTURE_FRYING = OrderedDict(
 
 FRYING = [STRUCTURE_FRYING, COLOR_FRYING]
 
-deepfry(img; madness::Int = 5, nostalgia::Bool = false) =
-    deepfry(default_rng(), img; madness, nostalgia)
-nuke(img) = nuke(default_rng(), img)
-
-function deepfry(rng::AbstractRNG, img; madness::Int = 5, nostalgia::Bool = false)
+function deepfry(img; rng::AbstractRNG=GLOBAL_RNG, madness::Int = 5, nostalgia::Bool = false)
     if nostalgia
         img_evol = Matrix{RGB{Float64}}[copy(img)]
     end
@@ -93,6 +91,6 @@ function deepfry(rng::AbstractRNG, img; madness::Int = 5, nostalgia::Bool = fals
     return img
 end
 
-nuke(rng::AbstractRNG, img) = deepfry(rng, img; madness = 10, nostalgia = false)
+nuke(img; rng::AbstractRNG=GLOBAL_RNG) = deepfry(img; rng, madness = 10, nostalgia = false)
 
 end
