@@ -8,7 +8,7 @@ using DitherPunk: Bayer, FloydSteinberg, ClusteredDots, dither
 using Distributions
 using LinearAlgebra
 using ImageContrastAdjustment
-using ImageFiltering: Kernel, imfilter
+using ImageFiltering: ImageFiltering, Kernel, imfilter
 using ImageTransformations: imresize, warp, center
 using JpegTurbo
 using MosaicViews: mosaicview
@@ -28,7 +28,7 @@ COLOR_FRYING = OrderedDict(
         (rng, img) -> begin
             T = eltype(img)
             img = HSV.(img)
-            img = HSV.(getfield.(img, :h), rand(rng) * 0.2 + 0.8, getfield.(img, :v))
+            img = HSV.(getfield.(img, :h), rand(rng) * 0.15 + 0.8, getfield.(img, :v))
             T.(img)
         end,
     "equalizing contrast" =>
