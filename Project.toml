@@ -25,6 +25,7 @@ StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 [compat]
 CoherentNoise = "1"
 ColorSchemes = "3"
+ColorVectorSpace = "0.9"
 Colors = "0.12"
 Distributions = "0.25"
 DitherPunk = "3"
