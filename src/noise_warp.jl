@@ -20,6 +20,7 @@ end
 function ridged_warp(img; rng::AbstractRNG=default_rng(), squared=true, variance=0.1, frequency=2.5, persistence=0.4, attenuation=1, scaling=0.1, crop=true)
     source = opensimplex2_3d(seed=rand(rng, UInt))
     source = ridged_fractal_3d(;source, frequency, persistence, attenuation)
+    display(gen_image(source))
     noise_warp(img, CoherentNoise.scale(source, scaling); squared, variance, crop)
 end
 

@@ -1,7 +1,7 @@
 module DeepFry
 
 using CoherentNoise
-using Colors: Colors, Gray, HSV, RGB, mapc
+using Colors: Colors, Gray, HSV, RGB, RGBA, mapc
 using ColorSchemes: ColorSchemes
 using ColorVectorSpace
 using DitherPunk: Bayer, FloydSteinberg, ClusteredDots, dither
@@ -10,10 +10,11 @@ using LinearAlgebra
 using ImageContrastAdjustment
 using ImageFiltering: Kernel, imfilter
 using ImageTransformations: imresize, warp, center
+using JpegTurbo
 using MosaicViews: mosaicview
 using OffsetArrays
 using OrderedCollections: OrderedDict
-using Random: default_rng, AbstractRNG, randexp
+using Random: default_rng, AbstractRNG, randexp, GLOBAL_RNG
 using StaticArrays
 export deepfry, nuke
 

@@ -1,5 +1,5 @@
 # From ImageTransformations example
-function swirl(rng::AbstractRNG, img, rotation::Real, strength::Real, radius::Real)
+function swirl(rng::AbstractRNG, img, rotation::Real=0.0, strength::Real=10.0, radius::Real=minimum(size(img)) ÷ 2)
     x0 = Tuple(rand(rng, CartesianIndices(img)))
 
     r = log(2) * radius / 5
