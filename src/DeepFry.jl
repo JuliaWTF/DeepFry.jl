@@ -32,7 +32,7 @@ COLOR_FRYING = OrderedDict(
             T.(img)
         end,
     "equalizing contrast" =>
-        (rng, img) -> adjust_histogram(img, Equalization(nbins = rand(rng, 2:10))),
+        (rng, img) -> adjust_histogram(img, Equalization(; nbins=rand(rng, 2:10))),
     "color dithering" => (rng, img) -> dither(img, FloydSteinberg(), prism),
 )
 STRUCTURE_FRYING = OrderedDict(
@@ -40,12 +40,11 @@ STRUCTURE_FRYING = OrderedDict(
     "dot clustering" => (rng, img) -> dither(img, ClusteredDots()),
     "pixelizing" => (rng, img) -> begin
         s = size(img)
-        imresize(imresize(img, ratio = 1 / rand(rng, 4:20)), s)
+        imresize(imresize(img; ratio=1 / rand(rng, 4:20)), s)
     end,
     "Laplacian filtering" =>
         (rng, img) -> imfilter(img, Kernel.laplacian2d(rand(rng, 0:3))),
-    "Gaussian filtering" =>
-        (rng, img) -> imfilter(img, Kernel.gaussian(rand(rng, 1:5))),
+    "Gaussian filtering" => (rng, img) -> imfilter(img, Kernel.gaussian(rand(rng, 1:5))),
     "Gabor filtering" =>
         (rng, img) -> imfilter(
             img,
@@ -67,11 +66,11 @@ STRUCTURE_FRYING = OrderedDict(
 
 FRYING = [STRUCTURE_FRYING, COLOR_FRYING]
 
-function deepfry(img; rng::AbstractRNG=GLOBAL_RNG, madness::Int = 5, nostalgia::Bool = false)
+function deepfry(img; rng::AbstractRNG=GLOBAL_RNG, madness::Int=5, nostalgia::Bool=false)
     if nostalgia
         img_evol = Matrix{RGB{Float64}}[copy(img)]
     end
-    for _ = 1:madness
+    for _ in 1:madness
         name, f = rand(rng, FRYING[rand(rng, Categorical([0.8, 0.2]))])
         @info "running $name"
         img = f(rng, img)
@@ -92,6 +91,6 @@ function deepfry(img; rng::AbstractRNG=GLOBAL_RNG, madness::Int = 5, nostalgia::
     return img
 end
 
-nuke(img; rng::AbstractRNG=GLOBAL_RNG) = deepfry(img; rng, madness = 10, nostalgia = false)
+nuke(img; rng::AbstractRNG=GLOBAL_RNG) = deepfry(img; rng, madness=10, nostalgia=false)
 
 end

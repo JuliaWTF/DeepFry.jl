@@ -33,7 +33,6 @@ using DeepFry: RGB
 img = rand(RGB, 300, 500)
 deepfry(img; madness=8, nostalgia=true)
 
-
 img = TestImages.testimage("mountainstream")
 deepfry(img)
 img = TestImages.testimage("cameraman")
