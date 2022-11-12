@@ -15,7 +15,7 @@ const SHARPEN_FILTER = [-2  -2  -2;
                         -2  -2  -2]
 
 function sharpen(img; rng::AbstractRNG=default_rng(), scale=rand(rng, Beta(4.0, 20.0)))
-    imfilter(img, reflect(SHARPEN_FILTER) * scale)
+    imfilter(img, ImageFiltering.reflect(SHARPEN_FILTER) * scale)
 end
 
 function saturate(img; rng::AbstractRNG=default_rng())
@@ -31,7 +31,7 @@ function add_noise(img; rng::AbstractRNG=default_rng(), fill_noise=0.0)
 end
 
 function jpeg_compression(img; rng::AbstractRNG=default_rng(), quality::Integer=10)
-    0 < quality <= 100 || error("quality needs to be between 0 and 1")
+    0 < quality <= 100 || error("quality needs to be between 0 and 100")
     return jpeg_decode(jpeg_encode(img; quality))
 end
 

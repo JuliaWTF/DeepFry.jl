@@ -2,8 +2,6 @@ function noise_warp(img, noise_source; squared=true, variance=0.1, crop=true)
     !crop || variance < 0.5 || error("(relative) variance needs to be smaller to 50% (0.5) to avoid cropping the whole image.")
     h, w = size(img)
     variances = floor.(Int, variance * (squared ? min(h, w) * ones(2) : [h, w]))
-    # sampler = opensimplex2_3d()
-    # sampler = billow_fractal_3d()
     vals = [(Float64.(Gray.(gen_image(noise_source; w, h))) .- 0.5) * variances[i]  for i in 1:2]
     vecs = [[vals[1][i], vals[2][i]]  for i in CartesianIndices(img)]
     function move_from_vecs(x::SVector{N}) where {N}
