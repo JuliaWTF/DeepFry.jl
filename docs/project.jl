@@ -2,11 +2,13 @@ using Pollen, ModuleInfo, Pkg
 
 # The main package you are documenting
 using DeepFry
+using JpegGlitcher
+using CoherentTransformations
 m = DeepFry
 
 # Packages that will be indexed in the documentation. Add additional modules
 # to the list.
-ms = [m]
+ms = [m, JpegGlitcher, CoherentTransformations]
 
 function createpackageindex(; package=m, modules=ms, tag="dev")
     pkgtags = Dict(string(package) => tag)

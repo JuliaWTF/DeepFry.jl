@@ -2,7 +2,7 @@
 
 julia_version = "1.8.2"
 manifest_format = "2.0"
-project_hash = "fb57afc0ff118c6bef4caee4af8a6cf3c605b88b"
+project_hash = "6406e077e6ae069a33a98053615bb2662db0a3e8"
 
 [[deps.ANSIColoredPrinters]]
 git-tree-sha1 = "574baf8110975760d391c710b6341da1afa48d8c"
@@ -125,6 +125,12 @@ git-tree-sha1 = "4f7908195dcee9a5fec206ec8afbbde3b054979f"
 uuid = "3547b4d8-3bdb-4c10-a099-d01a31e852e0"
 version = "1.6.5"
 
+[[deps.CoherentTransformations]]
+deps = ["CoherentNoise", "ImageTransformations", "Random", "StaticArrays"]
+git-tree-sha1 = "3abdcb53f512a0a43c121471bb48a8b8feb0b278"
+uuid = "77ba1a33-2bad-462b-8444-1926d7830738"
+version = "1.0.0"
+
 [[deps.ColorSchemes]]
 deps = ["ColorTypes", "ColorVectorSpace", "Colors", "FixedPointNumbers", "Random"]
 git-tree-sha1 = "1fd869cc3875b57347f7027521f561cf46d1fcd8"
@@ -225,7 +231,7 @@ deps = ["Printf"]
 uuid = "ade2ca70-3891-5945-98fb-dc099432e06a"
 
 [[deps.DeepFry]]
-deps = ["CoherentNoise", "ColorSchemes", "ColorVectorSpace", "Colors", "Distributions", "DitherPunk", "FileIO", "ImageContrastAdjustment", "ImageCore", "ImageFiltering", "ImageMagick", "ImageTransformations", "JpegTurbo", "LinearAlgebra", "MosaicViews", "OffsetArrays", "OrderedCollections", "Random", "StaticArrays", "TestImages"]
+deps = ["CoherentNoise", "ColorSchemes", "ColorVectorSpace", "Colors", "Distributions", "DitherPunk", "FileIO", "ImageContrastAdjustment", "ImageCore", "ImageFiltering", "ImageMagick", "ImageTransformations", "JpegGlitcher", "JpegTurbo", "LinearAlgebra", "MosaicViews", "OffsetArrays", "OrderedCollections", "Random", "StaticArrays", "TestImages"]
 path = "/home/theo/.julia/dev/DeepFry"
 uuid = "760752a8-943b-47af-ae9a-04fdfee5f700"
 version = "0.1.0"
@@ -575,6 +581,12 @@ deps = ["Dates", "Mmap", "Parsers", "SnoopPrecompile", "StructTypes", "UUIDs"]
 git-tree-sha1 = "65edf3850efb9cb4ca3b0bf488e29c6c38a23d2d"
 uuid = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
 version = "1.11.1"
+
+[[deps.JpegGlitcher]]
+deps = ["JpegTurbo", "Random"]
+git-tree-sha1 = "06eab8eb556fce03a893e52121688a83ed8eb485"
+uuid = "7e1ea31b-b9a5-4cc0-940e-7c5f7cd080d6"
+version = "1.0.0"
 
 [[deps.JpegTurbo]]
 deps = ["CEnum", "FileIO", "ImageCore", "JpegTurbo_jll", "TOML"]

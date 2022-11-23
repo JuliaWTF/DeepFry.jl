@@ -1,6 +1,7 @@
 module DeepFry
 
 using CoherentNoise
+using CoherentTransformations
 using Colors: Colors, Gray, HSV, RGB, RGBA, mapc
 using ColorSchemes: ColorSchemes
 using ColorVectorSpace

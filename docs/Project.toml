@@ -1,4 +1,6 @@
 [deps]
+CoherentTransformations = "77ba1a33-2bad-462b-8444-1926d7830738"
 DeepFry = "760752a8-943b-47af-ae9a-04fdfee5f700"
+JpegGlitcher = "7e1ea31b-b9a5-4cc0-940e-7c5f7cd080d6"
 ModuleInfo = "3c3ff5e7-c68c-4a09-80d1-9526a1e9878a"
 Pollen = "c88717ad-5130-4874-a664-5a9aba5ec443"
