@@ -39,11 +39,6 @@ img = TestImages.testimage("cameraman")
 DeepFry.swirl(default_rng(), img, 0, 10, minimum(size(img)) ÷ 2)
 new_img = DeepFry.checker_warp(img; crop=false, scaling=0.3)
 DeepFry.ridged_warp(img; scaling=0.5)
-using DeepFry: CoherentNoise
-
-source = CoherentNoise.checkered_2d()
-
-CoherentNoise.gen_image(CoherentNoise.scale(source, 0.1))
 
 deepfry(img)
 
