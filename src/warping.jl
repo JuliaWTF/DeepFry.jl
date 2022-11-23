@@ -68,27 +68,3 @@ function sharp_bubble(rng::AbstractRNG, img, factor::Real=1.2)
     end
     return warp(img, bubble_map, axes(img))
 end
-
-function random_warp(rng::AbstractRNG, img; variance=0.01, scaling=0.3)
-    h, w = size(img)
-    variance = floor(Int, variance * min(h, w))
-    sampler = opensimplex2_3d()
-    # sampler = billow_fractal_3d()
-    # sampler=  spheres_3d()
-    # sampler = checkered_2d()
-    # sampler = opensimplex2_3d()
-    sampler = ridged_fractal_3d(;
-        source=sampler, frequency=2.5, persistence=0.4, attenuation=1
-    )
-    sampler = CoherentNoise.scale(sampler, scaling)
-    vals = [(Float64.(Gray.(gen_image(sampler; w, h))) .- 0.5) * variance for _ in 1:2]
-    vecs = [[vals[1][i], vals[2][i]] for i in CartesianIndices(img)]
-    function move_from_vecs(x::SVector{N}) where {N}
-        return SVector{N}(x .+ vecs[x...])
-    end
-    img = warp(img, move_from_vecs, axes(img))
-    return imresize(
-        img[(begin + variance):(end - variance), (begin + variance):(end - variance)],
-        (h, w),
-    )
-end
