@@ -4,7 +4,7 @@ using CoherentNoise
 using CoherentTransformations
 using Colors: Colors, Gray, HSV, RGB, RGBA, mapc
 using ColorSchemes: ColorSchemes
-using ColorVectorSpace
+# using ColorVectorSpace
 using DitherPunk: Bayer, FloydSteinberg, ClusteredDots, dither
 using Distributions
 using LinearAlgebra
@@ -82,7 +82,7 @@ function deepfry(img; rng::AbstractRNG=GLOBAL_RNG, madness::Int=5, nostalgia::Bo
         img = f(rng, img)
         nans = findall(isnan, img)
         if !isempty(nans) # If we got some NaN replace with some color noise
-            img[nans] .= rand.(eltype(img))
+            img[nans] .= rand(rng, eltype(img), length(nans))
         end
         if nostalgia
             push!(img_evol, copy(img))
