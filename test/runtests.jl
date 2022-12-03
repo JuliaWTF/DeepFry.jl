@@ -27,6 +27,16 @@ using Random: MersenneTwister, default_rng
             end
         end
     end
+    @testset "Test standard frying" begin
+        for f in DeepFry.STD_FRYING
+            @testset "Effect $f" begin
+                new_img = f(img; rng=default_rng())
+                @test size(new_img) == size(img)
+                @test eltype(new_img) == eltype(img)
+                @test all(!isnan, new_img)
+            end
+        end
+    end
 end
 
 using DeepFry: RGB
@@ -41,6 +51,3 @@ new_img = DeepFry.checker_warp(img; crop=false, scaling=0.3)
 DeepFry.ridged_warp(img; scaling=0.5)
 
 deepfry(img)
-
-# mosaicview(pushfirst!([f(default_rng(), img) for (n, f) in pairs(DeepFry.STRUCTURE_FRYING)], img);nrow=2, fillvalue=colorant"white")
-# mosaicview(pushfirst!([f(default_rng(), img) for (n, f) in pairs(DeepFry.COLOR_FRYING)], img);nrow=2, fillvalue=colorant"white")
