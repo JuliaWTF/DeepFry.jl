@@ -28,7 +28,7 @@ const SHARPEN_FILTER = [
     -2 -2 -2
 ]
 
-function sharpen(img; rng::AbstractRNG=default_rng(), scale=rand(rng, Beta(4.0, 20.0)))
+function sharpen(img; rng::AbstractRNG=default_rng(), scale=rand(rng, Beta(1.0, 20.0)))
     return imfilter(img, ImageFiltering.reflect(SHARPEN_FILTER) * scale)
 end
 
@@ -56,10 +56,11 @@ function jpeg_compression(
     return jpeg_decode(jpeg_encode(img; quality))
 end
 
-const STD_FRYING = [set_brightness, set_contrast, sharpen, add_noise, jpeg_compression]
-
-function fry(img; rng::AbstractRNG=default_rng())
-    return foldl(STD_FRYING; init=img) do img, f
-        f(img; rng)
-    end
-end
+const STD_FRYING = [
+    set_brightness, 
+    set_contrast, 
+    sharpen,
+    add_noise, 
+    jpeg_compression,
+    (x; rng) -> glitch(x; rng, n=5)
+]
