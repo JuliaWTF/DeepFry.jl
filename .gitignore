@@ -3,3 +3,6 @@ test/Manifest.toml
 *.png
 /.benchmarkci
 /benchmark/*.json
+*.mp4
+*.jpeg
+*.gif

@@ -7,6 +7,7 @@ using ColorSchemes: ColorSchemes
 # using ColorVectorSpace
 using DitherPunk: Bayer, FloydSteinberg, ClusteredDots, dither
 using Distributions
+using FileIO
 using LinearAlgebra
 using ImageContrastAdjustment
 using ImageFiltering: ImageFiltering, Kernel, imfilter
@@ -16,9 +17,9 @@ using JpegGlitcher
 using MosaicViews: mosaicview
 using OffsetArrays
 using OrderedCollections: OrderedDict
-using Random: default_rng, AbstractRNG, randexp, GLOBAL_RNG
+using Random: default_rng, AbstractRNG, randexp, GLOBAL_RNG, Xoshiro
 using StaticArrays
-export fry, deepfry, nuke
+export fry, deepfry, nuke, fastfood
 export COLOR_FRYING, STRUCTURE_FRYING, STD_FRYING, FRYING
 
 include("utils.jl")
@@ -131,6 +132,28 @@ function fry(img; rng::AbstractRNG=default_rng())
     return foldl(STD_FRYING; init=img) do img, f
         f(img; rng)
     end
+end
+
+"""
+    fastfood(name::AbstractString, img::AbstractArray{<:Colorant})
+
+"""
+function fastfood(name::AbstractString, img::AbstractArray, n::Integer; rng::AbstractRNG=default_rng(), temperature::Integer=3)
+    name = endswith(name, ".gif") ? name : name * ".gif"
+    return save(
+        name,
+        reduce(
+            deepfry(
+                img;
+                rng=Xoshiro(rand(rng, UInt)),
+                temperature,
+                verbosity=false,
+                nostalgia=false,
+            ) for _ in 1:n
+        ) do x, y
+            cat(x, y; dims=3) # Concatenate over the third dimension
+        end,
+    )
 end
 
 end

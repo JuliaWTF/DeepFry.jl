@@ -57,10 +57,10 @@ function jpeg_compression(
 end
 
 const STD_FRYING = [
-    set_brightness, 
-    set_contrast, 
+    set_brightness,
+    set_contrast,
     sharpen,
-    add_noise, 
+    add_noise,
     jpeg_compression,
-    (x; rng) -> glitch(x; rng, n=5)
+    (x; rng) -> glitch(x; rng, n=5),
 ]
