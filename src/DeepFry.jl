@@ -35,28 +35,21 @@ COLOR_FRYING = OrderedDict(
     # "color dithering" => (rng, img) -> dither(img, FloydSteinberg(), prism),
 )
 STRUCTURE_FRYING = OrderedDict(
-    "D-D-D-D-Dither" => (rng, img) -> dither(img, Bayer(rand(rng, 1:3))),
-    "dot clustering" => (rng, img) -> dither(img, ClusteredDots()),
-    "Pixie the pixel" =>
-        (rng, img) -> begin
-            s = size(img)
-            imresize(imresize(img; ratio=1 / rand(rng, 4:20)), s)
-        end,
+    "D-D-D-D-Dither" => bayer_dither,
+    "dot clustering" => dot_cluster,
+    "Pixie the pixel" => pixelize,
     # "Laplacian filtering" =>
     # (rng, img) -> imfilter(img, Kernel.laplacian2d(rand(rng, 0:3))),
-    "Gaussian filtering" =>
-        (rng, img) -> imfilter(eltype(img), img, Kernel.gaussian(rand(rng, 1:5))),
+    "Gaussian filtering" => gauss_filter,
     "Who the hell is Gabor" => gabor_filter,
-    "Get that swirl" =>
-        (rng, img) -> swirl(rng, img, 0, 10, rand(rng, Poisson(minimum(size(img)) ÷ 2))),
-    "Bubble like Gauss" => (rng, img) -> bubble(rng, img, rand(rng, Gamma(2.0, 1.0))),
-    "Laplace like bubble" =>
-        (rng, img) -> sharp_bubble(rng, img, rand(rng, Gamma(1.5, 1.0))),
-    "Glitch that itch" => (rng, img) -> glitch(img; rng, n=rand(rng, Poisson(3)) + 1),
-    "Chess time" => (rng, img) -> checker_warp(img; rng, variance=rand(rng, Beta()) * 0.5),
-    "They say it's ridged" => (rng, img) -> ridged_warp(img; rng),
-    "Cows are spherical" => (rng, img) -> sphere_warp(img; rng),
-    "Round the cylinder" => (rng, img) -> cylinder_warp(img; rng),
+    "Get that swirl" => swirl_warp,
+    "Bubble like Gauss" => gauss_warp,
+    "Laplace like bubble" => laplace_warp,
+    "Glitch that itch" => rand_glitch,
+    "Chess time" => rand_checker_warp,
+    "They say it's ridged" => ridged_warp,
+    "Cows are spherical" => sphere_warp,
+    "Round the cylinder" => cylinder_warp,
 )
 
 FRYING = [STRUCTURE_FRYING, COLOR_FRYING]
@@ -81,7 +74,7 @@ Take an image and apply a series of random filters to it.
 """
 function deepfry(
     img::AbstractArray{T,N};
-    rng::AbstractRNG=GLOBAL_RNG,
+    rng::AbstractRNG=default_rng(),
     temperature::Integer=5,
     nostalgia::Bool=false,
     verbosity::Integer=0,
@@ -94,7 +87,7 @@ function deepfry(
     tot_t = @elapsed for _ in 1:temperature
         name, f = rand(rng, FRYING[rand(rng, Categorical([0.8, 0.2]))])
         Base.@logmsg Base.LogLevel(1) "$name"
-        t = @elapsed img = f(rng, img)
+        t = @elapsed img = f(img; rng)
         Base.@logmsg Base.LogLevel(2) "run in $(t)s"
         nans = findall(isnan, img)
         if !isempty(nans) # If we got some NaN replace with some color noise
@@ -120,7 +113,9 @@ end
 
 Wrapper around [`deepfry`](@ref), forcing a temperature of `10`.
 """
-nuke(img; rng::AbstractRNG=GLOBAL_RNG) = deepfry(img; rng, temperature=10, nostalgia=false)
+function nuke(img; rng::AbstractRNG=default_rng())
+    return deepfry(img; rng, temperature=10, nostalgia=false)
+end
 
 """
     fry(img; rng)
@@ -138,7 +133,13 @@ end
     fastfood(name::AbstractString, img::AbstractArray{<:Colorant})
 
 """
-function fastfood(name::AbstractString, img::AbstractArray, n::Integer; rng::AbstractRNG=default_rng(), temperature::Integer=3)
+function fastfood(
+    name::AbstractString,
+    img::AbstractArray,
+    n::Integer;
+    rng::AbstractRNG=default_rng(),
+    temperature::Integer=3,
+)
     name = endswith(name, ".gif") ? name : name * ".gif"
     return save(
         name,

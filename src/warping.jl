@@ -25,7 +25,7 @@ function swirl(
     return warp(img, swirl_map, axes(img))
 end
 
-function bubble(rng::AbstractRNG, img, factor::Real=1.5)
+function bubble(img, factor::Real=1.5; rng::AbstractRNG=default_rng())
     x0 = Tuple(rand(rng, CartesianIndices(img)))
     function bubble_map(x::SVector{N}) where {N}
         xd = x .- x0
@@ -35,7 +35,7 @@ function bubble(rng::AbstractRNG, img, factor::Real=1.5)
     return warp(img, bubble_map, axes(img))
 end
 
-function vwarp(rng::AbstractRNG, img, factor::Real=1.5)
+function vwarp(img, factor::Real=1.5; rng::AbstractRNG=default_rng())
     x0 = Tuple(rand(rng, CartesianIndices(img)))
     function bubble_map(x::SVector{N}) where {N}
         xd = x .- x0
@@ -47,7 +47,7 @@ function vwarp(rng::AbstractRNG, img, factor::Real=1.5)
     return warp(img, bubble_map, axes(img))
 end
 
-function hwarp(rng::AbstractRNG, img, factor::Real=1.5)
+function hwarp(img, factor::Real=1.5; rng::AbstractRNG=default_rng())
     x0 = Tuple(rand(rng, CartesianIndices(img)))
     function bubble_map(x::SVector{N}) where {N}
         xd = x .- x0
@@ -59,7 +59,7 @@ function hwarp(rng::AbstractRNG, img, factor::Real=1.5)
     return warp(img, bubble_map, axes(img))
 end
 
-function sharp_bubble(rng::AbstractRNG, img, factor::Real=1.2)
+function sharp_bubble(img, factor::Real=1.2; rng::AbstractRNG=default_rng())
     x0 = Tuple(rand(rng, CartesianIndices(img)))
     function bubble_map(x::SVector{N}) where {N}
         xd = x .- x0

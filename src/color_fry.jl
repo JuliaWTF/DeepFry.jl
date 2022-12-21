@@ -1,4 +1,4 @@
-function saturate(rng::AbstractRNG, img::AbstractArray{T}) where {T}
+function saturate(img::AbstractArray{T}; rng::AbstractRNG=default_rng()) where {T}
     new_saturation = rand(rng) * 0.15 + 0.8
     map(img) do c
         hsv = HSV(c)
@@ -7,6 +7,6 @@ function saturate(rng::AbstractRNG, img::AbstractArray{T}) where {T}
     end
 end
 
-function equalize_contrast(rng::AbstractRNG, img)
+function equalize_contrast(img; rng::AbstractRNG=default_rng())
     return adjust_histogram(img, Equalization(; nbins=rand(rng, 2:10)))
 end
