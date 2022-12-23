@@ -1,10 +1,10 @@
 # From ImageTransformations example
 function swirl(
-    rng::AbstractRNG,
     img,
     rotation::Real=0.0,
     strength::Real=10.0,
-    radius::Real=minimum(size(img)) ÷ 2,
+    radius::Real=minimum(size(img)) ÷ 2;
+    rng::AbstractRNG = default_rng()
 )
     x0 = Tuple(rand(rng, CartesianIndices(img)))
 

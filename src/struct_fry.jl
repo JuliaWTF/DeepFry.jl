@@ -32,7 +32,7 @@ function gabor_filter(img::AbstractArray{T}; rng::AbstractRNG=default_rng()) whe
 end
 
 function swirl_warp(img; rng::AbstractRNG=default_rng())
-    return swirl(rng, img, 0, 10, rand(rng, Poisson(minimum(size(img)) ÷ 2)))
+    return swirl(img, 0, 10, rand(rng, Poisson(minimum(size(img)) ÷ 2)); rng)
 end
 
 function gauss_warp(img; rng::AbstractRNG=default_rng())
