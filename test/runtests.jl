@@ -10,7 +10,7 @@ using Random: MersenneTwister, default_rng
     @testset "Test structure frying" begin
         for (name, f) in DeepFry.STRUCTURE_FRYING
             @testset "Effect $name" begin
-                new_img = f(default_rng(), img)
+                new_img = f(img; rng = default_rng())
                 @test size(new_img) == size(img)
                 @test eltype(new_img) == eltype(img)
                 @test all(!isnan, new_img)
@@ -20,7 +20,7 @@ using Random: MersenneTwister, default_rng
     @testset "Test color frying" begin
         for (name, f) in DeepFry.COLOR_FRYING
             @testset "Effect $name" begin
-                new_img = f(default_rng(), img)
+                new_img = f(img; rng = default_rng())
                 @test size(new_img) == size(img)
                 @test eltype(new_img) == eltype(img)
                 @test all(!isnan, new_img)
@@ -40,14 +40,23 @@ using Random: MersenneTwister, default_rng
 end
 
 using DeepFry: RGB
-img = rand(RGB, 300, 500)
-deepfry(img; madness=8, nostalgia=true)
+img = rand(RGB, 2480, 3508)
 
 img = TestImages.testimage("mountainstream")
+img = load("/home/theo/Pictures/berlin_maker_faire.jpg")
+img = DeepFry.imresize(img,floor.(Int, 3 .* size(img))...)
+for i in 1:100
+    new_img = deepfry(img; temperature=9)
+    save("/home/theo/Pictures/deepfry_$(i).png", new_img)
+end
+
 deepfry(img)
+fastfood("mountain.gif", img, 30)
 img = TestImages.testimage("cameraman")
-DeepFry.swirl(default_rng(), img, 0, 10, minimum(size(img)) ÷ 2)
+DeepFry.swirl(img, 0, 10, minimum(size(img)) ÷ 2)
 new_img = DeepFry.checker_warp(img; crop=false, scaling=0.3)
 DeepFry.ridged_warp(img; scaling=0.5)
 
 deepfry(img)
+
+
