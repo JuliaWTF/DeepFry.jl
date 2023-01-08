@@ -4,21 +4,20 @@ using CoherentNoise
 using CoherentTransformations
 using Colors: Colors, Gray, HSV, RGB, RGBA, mapc
 using ColorSchemes: ColorSchemes
-# using ColorVectorSpace
 using DitherPunk: Bayer, FloydSteinberg, ClusteredDots, dither
 using Distributions
 using FileIO
-using LinearAlgebra
+using FixedPointNumbers
 using ImageContrastAdjustment
 using ImageFiltering: ImageFiltering, Kernel, imfilter
 using ImageTransformations: imresize, warp, center
-using JpegTurbo
 using JpegGlitcher
+using JpegTurbo
+using LinearAlgebra
 using MosaicViews: mosaicview
-using OffsetArrays
-using OrderedCollections: OrderedDict
 using Random: default_rng, AbstractRNG, randexp, GLOBAL_RNG, Xoshiro
 using StaticArrays
+
 export fry, deepfry, nuke, fastfood
 export COLOR_FRYING, STRUCTURE_FRYING, STD_FRYING, FRYING
 
@@ -27,14 +26,15 @@ include("warping.jl")
 include("color_fry.jl")
 include("struct_fry.jl")
 include("standard_fry.jl")
+include("precompile.jl")
 
 const prism = ColorSchemes.prism[1:10]
-COLOR_FRYING = OrderedDict(
+const COLOR_FRYING = Dict(
     "It's saturated" => saturate,
     "Contrast equalizer" => equalize_contrast,
     # "color dithering" => (rng, img) -> dither(img, FloydSteinberg(), prism),
 )
-STRUCTURE_FRYING = OrderedDict(
+const STRUCTURE_FRYING = Dict(
     "D-D-D-D-Dither" => bayer_dither,
     "dot clustering" => dot_cluster,
     "Pixie the pixel" => pixelize,
@@ -52,13 +52,13 @@ STRUCTURE_FRYING = OrderedDict(
     "Round the cylinder" => cylinder_warp,
 )
 
-FRYING = [STRUCTURE_FRYING, COLOR_FRYING]
+const FRYING = [STRUCTURE_FRYING, COLOR_FRYING]
 
 """
     deepfry(
-        img::AbstractArray{T, N}; 
+        img::AbstractMatrix{T}; 
         rng::AbstractRNG=GLOBAL_RNG, temperature::Integer=5, nostalgia::Bool=false, verbosity::Integer=0
-    )
+    ) where {T<:Colorant}
 
 Take an image and apply a series of random filters to it.
 
@@ -86,9 +86,11 @@ function deepfry(
     end
     tot_t = @elapsed for _ in 1:temperature
         name, f = rand(rng, FRYING[rand(rng, Categorical([0.8, 0.2]))])
-        Base.@logmsg Base.LogLevel(1) "$name"
-        t = @elapsed img = f(img; rng)
-        Base.@logmsg Base.LogLevel(2) "run in $(t)s"
+        # Base.@logmsg Base.LogLevel(1) "$name"
+        @info "$name"
+        # t = @elapsed img = f(img; rng)
+        img = f(img; rng)
+        # Base.@logmsg Base.LogLevel(2) "run in $(t)s"
         nans = findall(isnan, img)
         if !isempty(nans) # If we got some NaN replace with some color noise
             # TODO use the `rng` when `ColorTypes 0.12 is out`
@@ -99,9 +101,10 @@ function deepfry(
         end
     end
     if length(unique(img)) < 3
-        Base.Base.@logmsg Base.LogLevel(1) "Your image got completely burned, try again"
+        # Base.Base.@logmsg Base.LogLevel(1) "Your image got completely burned, try again"
+        @warn "Your image got completely burned, try again"
     end
-    Base.@logmsg Base.LogLevel(2) "Total run time: $(tot_t)s"
+    @info "Total run time: $(tot_t)s"
     if nostalgia
         display(mosaicview(img_evol; nrow=3))
     end
@@ -109,7 +112,7 @@ function deepfry(
 end
 
 """
-    nuke(img; rng)
+    nuke(img::AbstractMatrix{T}; rng::AbstractRNG) where {T<:Colorant}
 
 Wrapper around [`deepfry`](@ref), forcing a temperature of `10`.
 """
@@ -118,7 +121,7 @@ function nuke(img; rng::AbstractRNG=default_rng())
 end
 
 """
-    fry(img; rng)
+    fry(img::AbstractMatrix{T}; rng::AbstractRNG) where {T<:Colorant}
 
 Frying using a sequence of predetermined layers.
 Look at `DeepFry.STD_FRYING` for more details.
@@ -130,13 +133,16 @@ function fry(img; rng::AbstractRNG=default_rng())
 end
 
 """
-    fastfood(name::AbstractString, img::AbstractArray{<:Colorant})
+    fastfood(output::AbstractString, img::AbstractMatrix{<:Colorant}, nframes;
+        rng::AbstractRNG, temperature::Int=3)
 
+Build a gif in `output` from `img` by calling [`deepfry`](@ref) `nframes` times 
+on `img` with the given `temperature`. 
 """
 function fastfood(
     name::AbstractString,
     img::AbstractArray,
-    n::Integer;
+    nframes::Integer;
     rng::AbstractRNG=default_rng(),
     temperature::Integer=3,
 )
@@ -150,7 +156,7 @@ function fastfood(
                 temperature,
                 verbosity=false,
                 nostalgia=false,
-            ) for _ in 1:n
+            ) for _ in 1:nframes
         ) do x, y
             cat(x, y; dims=3) # Concatenate over the third dimension
         end,

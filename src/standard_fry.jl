@@ -28,7 +28,9 @@ const SHARPEN_FILTER = [
     -2 -2 -2
 ]
 
-function sharpen(img::AbstractArray{T}; rng::AbstractRNG=default_rng(), scale=rand(rng, Beta(1.0, 20.0))) where {T}
+function sharpen(
+    img::AbstractArray{T}; rng::AbstractRNG=default_rng(), scale=rand(rng, Beta(1.0, 20.0))
+) where {T}
     img = imfilter(img, ImageFiltering.reflect(SHARPEN_FILTER) * scale)
     return safe_img_convert(T, img)
 end

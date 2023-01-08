@@ -5,7 +5,7 @@ using Random: default_rng
 using Colors
 using FixedPointNumbers
 
-Types = (RGB{Float64}, RGB{N0f8}, Gray)
+Types = (RGB{Float64}, RGB{N0f8}, Gray{Float64})
 N = 500
 rng = default_rng()
 SUITE = BenchmarkGroup()
