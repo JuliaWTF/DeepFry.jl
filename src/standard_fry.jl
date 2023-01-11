@@ -1,3 +1,9 @@
+"""
+    set_brightness(img; rng::AbstractRNG=default_rng(), brightness=rand(rng) * 0.5)
+
+`set_brightness` adds a random brightness to the image. The `brightness` parameter
+controls the amount of brightness added to the image.
+"""
 function set_brightness(
     img::AbstractArray{T}; rng::AbstractRNG=default_rng(), brightness=rand(rng) * 0.5
 ) where {T}
@@ -10,6 +16,12 @@ function set_brightness(
     end
 end
 
+"""
+    set_contrast(img; rng::AbstractRNG=default_rng(), contrast=randexp(rng))
+
+`set_contrast` adds a random contrast to the image. The `contrast` parameter
+controls the amount of contrast added to the image.
+"""
 function set_contrast(
     img::AbstractArray{T}; rng::AbstractRNG=default_rng(), contrast=randexp(rng)
 ) where {T}
@@ -28,6 +40,12 @@ const SHARPEN_FILTER = [
     -2 -2 -2
 ]
 
+"""
+    sharpen(img; rng::AbstractRNG=default_rng(), scale=rand(rng, Beta(1.0, 20.0))
+
+`sharpen` sharpens the image by convolving it with a sharpening filter. The `scale`
+parameter controls the strength of the sharpening.
+"""
 function sharpen(
     img::AbstractArray{T}; rng::AbstractRNG=default_rng(), scale=rand(rng, Beta(1.0, 20.0))
 ) where {T}
@@ -35,6 +53,12 @@ function sharpen(
     return safe_img_convert(T, img)
 end
 
+"""
+    add_noise(img; rng::AbstractRNG=default_rng(), fill_noise=rand(rng, Beta(3, 10))
+
+`add_noise` adds noise to the image by randomly multiplying some pixel with a random value.
+The `fill_noise` parameter controls the probability of a pixel being affected by the noise.
+"""
 function add_noise(
     img::AbstractArray{T}; rng::AbstractRNG=default_rng(), fill_noise=rand(rng, Beta(3, 10))
 ) where {T}
@@ -52,6 +76,12 @@ function add_noise(
     return img
 end
 
+"""
+    jpeg_compression(img; rng::AbstractRNG=default_rng(), quality::Integer=rand(rng, Poisson(15))
+
+Compress and decompress the image using the JPEG algorithm. The `quality` parameter
+controls the compression level, with higher values resulting in higher quality images.
+"""
 function jpeg_compression(
     img; rng::AbstractRNG=default_rng(), quality::Integer=rand(rng, Poisson(15))
 )

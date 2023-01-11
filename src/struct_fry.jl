@@ -2,7 +2,7 @@ function bayer_dither(img; rng::AbstractRNG=default_rng())
     return dither(img, Bayer(rand(rng, 1:3)))
 end
 
-function dot_cluster(img; rng::AbstractRNG=default_rng())
+function dot_cluster(img; ::AbstractRNG=default_rng())
     return dither(img, ClusteredDots())
 end
 
