@@ -5,7 +5,7 @@ folder_to_fn = [
 ]
 
 for (folder, fns) in folder_to_fn
-    mkpath(@__DIR__, "examples", folder)
+    mkpath(joinpath(@__DIR__, "examples", folder))
     for fn in fns
         if fn isa Pair
             name, fn = fn

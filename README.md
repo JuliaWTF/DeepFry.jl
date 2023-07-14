@@ -1,3 +1,5 @@
+![Deepfried animated version of the Julia logo](https://raw.githubusercontent.com/JuliaWTF/DeepFry.jl/main/docs/src/assets/julia-dots.gif)
+
 # DeepFry
 
 [![CI](https://github.com/JuliaWTF/DeepFry.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/JuliaWTF/DeepFry.jl/actions/workflows/CI.yml)

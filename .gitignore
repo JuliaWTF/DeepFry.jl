@@ -9,5 +9,5 @@ docs/src/examples
 /test/dev.jl
 *.mp4
 *.jpeg
-*.gif
+/*.gif
 .vscode
