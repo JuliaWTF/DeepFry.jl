@@ -1,4 +1,4 @@
-for T in (RGB{Float64},RGB{N0f8}, Gray{Float64})
+for T in (RGB{Float64}, RGB{N0f8}, Gray{Float64})
     for f in (
         saturate,
         equalize_contrast,

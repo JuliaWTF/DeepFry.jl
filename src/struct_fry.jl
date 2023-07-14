@@ -44,7 +44,7 @@ function laplace_warp(img; rng::AbstractRNG=default_rng())
 end
 
 function rand_glitch(img; rng::AbstractRNG=default_rng())
-    return glitch(img; rng, n=rand(rng, Poisson(3)) + 1)
+    return JpegGlitcher.glitch(img; rng, n=rand(rng, Poisson(3)) + 1)
 end
 
 function rand_checker_warp(img; rng::AbstractRNG=default_rng())

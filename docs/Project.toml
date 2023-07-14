@@ -1,3 +1,7 @@
 [deps]
 DeepFry = "760752a8-943b-47af-ae9a-04fdfee5f700"
+DemoCards = "311a05b2-6137-4a5a-b473-18580a3d38b5"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
+ImageShow = "4e3cecfd-b093-5904-9786-8bbb286a6a31"
+TestImages = "5e47fb64-e119-507b-a336-dd2b206d9990"

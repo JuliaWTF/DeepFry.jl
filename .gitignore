@@ -1,6 +1,8 @@
 /Manifest.toml
 test/Manifest.toml
 docs/Manifest.toml
+docs/build
+docs/src/examples
 *.png
 /.benchmarkci
 /benchmark/*.json

@@ -89,11 +89,8 @@ function jpeg_compression(
     return jpeg_decode(jpeg_encode(img; quality))
 end
 
+glitch(x; rng::AbstractRNG=default_rng()) = JpegGlitcher.glitch(x; rng, n=5)
+
 const STD_FRYING = [
-    set_brightness,
-    set_contrast,
-    sharpen,
-    add_noise,
-    jpeg_compression,
-    (x; rng) -> glitch(x; rng, n=5),
+    set_brightness, set_contrast, sharpen, add_noise, jpeg_compression, glitch
 ]

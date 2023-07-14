@@ -11,9 +11,11 @@ using FixedPointNumbers
 using ImageContrastAdjustment
 using ImageFiltering: ImageFiltering, Kernel, imfilter
 using ImageTransformations: imresize, warp, center
-using JpegGlitcher
+using JpegGlitcher: JpegGlitcher
 using JpegTurbo
 using LinearAlgebra
+using Logging
+using LoggingExtras
 using MosaicViews: mosaicview
 using Random: default_rng, AbstractRNG, randexp, GLOBAL_RNG, Xoshiro
 using StaticArrays
@@ -84,27 +86,32 @@ function deepfry(
     if nostalgia && N == 2
         img_evol = Matrix{T}[copy(img)]
     end
-    tot_t = @elapsed for _ in 1:temperature
-        name, f = rand(rng, FRYING[rand(rng, Categorical([0.8, 0.2]))])
-        # Base.@logmsg Base.LogLevel(1) "$name"
-        @info "$name"
-        # t = @elapsed img = f(img; rng)
-        img = f(img; rng)
-        # Base.@logmsg Base.LogLevel(2) "run in $(t)s"
-        nans = findall(isnan, img)
-        if !isempty(nans) # If we got some NaN replace with some color noise
-            # TODO use the `rng` when `ColorTypes 0.12 is out`
-            img[nans] .= rand(eltype(img), length(nans))
-        end
-        if nostalgia
-            push!(img_evol, copy(img))
-        end
+    log_level = if verbosity == 0
+        Logging.Error
+    elseif verbosity == 1
+        Logging.Warn
+    else
+        Logging.Info
     end
-    if length(unique(img)) < 3
-        # Base.Base.@logmsg Base.LogLevel(1) "Your image got completely burned, try again"
-        @warn "Your image got completely burned, try again"
+    with_logger(MinLevelLogger(current_logger(), log_level)) do
+        tot_t = @elapsed for _ in 1:temperature
+            name, f = rand(rng, FRYING[rand(rng, Categorical([0.8, 0.2]))])
+            @info "$name"
+            img = f(img; rng)
+            nans = findall(isnan, img)
+            if !isempty(nans) # If we got some NaN replace with some color noise
+                # TODO use the `rng` when `ColorTypes 0.12 is out`
+                img[nans] .= rand(eltype(img), length(nans))
+            end
+            if nostalgia
+                push!(img_evol, copy(img))
+            end
+        end
+        if length(unique(img)) < 3
+            @warn "Your image got completely burned, try again"
+        end
+        @info "Total run time: $(tot_t)s"
     end
-    @info "Total run time: $(tot_t)s"
     if nostalgia
         display(mosaicview(img_evol; nrow=3))
     end
