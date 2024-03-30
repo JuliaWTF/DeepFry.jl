@@ -20,7 +20,7 @@ for (folder, fns) in folder_to_fn
     # ---
     # title: $(name)
     # cover: assets/$(fn).png
-    # id: $(fn)_$(name)
+    # id: $(folder)_$(fn)
     # ---
     """,
             )
