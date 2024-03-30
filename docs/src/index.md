@@ -7,6 +7,7 @@ On the way things happen and it became a chaotic image processing tool.
 Every run is entirely random up to the `AbstractRNG` used.
 
 ## Showcase
+
 Here are some examples:
 
 ```@example show
