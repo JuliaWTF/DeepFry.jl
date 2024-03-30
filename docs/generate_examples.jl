@@ -5,14 +5,14 @@ folder_to_fn = [
 ]
 
 for (folder, fns) in folder_to_fn
-    mkpath(joinpath(@__DIR__, "examples", folder))
+    folder_path = mkpath(joinpath(@__DIR__, "examples", folder))
     for fn in fns
         if fn isa Pair
             name, fn = fn
         else
             name = string(nameof(fn))
         end
-        open(joinpath(@__DIR__, "examples", folder, string(nameof(fn)) * ".jl"), "w") do io
+        open(joinpath(folder_path, string(nameof(fn)) * ".jl"), "w") do io
             println(
                 io,
                 """
