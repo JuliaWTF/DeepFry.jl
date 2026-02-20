@@ -1,7 +1,7 @@
 name = "DeepFry"
 uuid = "760752a8-943b-47af-ae9a-04fdfee5f700"
-authors = ["Théo Galy-Fajou <theo.galyfajou@gmail.com> and contributors"]
 version = "0.1.0"
+authors = ["Théo Galy-Fajou <theo.galyfajou@gmail.com> and contributors"]
 
 [deps]
 CoherentNoise = "3547b4d8-3bdb-4c10-a099-d01a31e852e0"
@@ -29,7 +29,7 @@ StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 CoherentNoise = "1"
 CoherentTransformations = "1"
 ColorSchemes = "3"
-Colors = "0.12"
+Colors = "0.12, 0.13"
 Distributions = "0.25"
 DitherPunk = "3"
 FileIO = "1"
