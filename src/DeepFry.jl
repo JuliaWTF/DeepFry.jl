@@ -117,15 +117,17 @@ function deepfry(
     end
     return img
 end
+deepfry(img_src::AbstractString; kwargs...) = deepfry(FileIO.load(img_src; kwargs...))
 
 """
     nuke(img::AbstractMatrix{T}; rng::AbstractRNG) where {T<:Colorant}
 
 Wrapper around [`deepfry`](@ref), forcing a temperature of `10`.
 """
-function nuke(img; rng::AbstractRNG=default_rng())
+function nuke(img::AbstractArray; rng::AbstractRNG=default_rng())
     return deepfry(img; rng, temperature=10, nostalgia=false)
 end
+nuke(img_src::AbstractString; kwargs...) = nuke(FileIO.load(img_src; kwargs...))
 
 """
     fry(img::AbstractMatrix{T}; rng::AbstractRNG) where {T<:Colorant}
@@ -138,6 +140,7 @@ function fry(img; rng::AbstractRNG=default_rng())
         f(img; rng)
     end
 end
+fry(img_src::AbstractString; kwargs...) = fry(FileIO.load(img_src; kwargs...))
 
 """
     fastfood(output::AbstractString, img::AbstractMatrix{<:Colorant}, nframes;
@@ -147,15 +150,15 @@ Build a gif in `output` from `img` by calling [`deepfry`](@ref) `nframes` times
 on `img` with the given `temperature`. 
 """
 function fastfood(
-    name::AbstractString,
+    gif_path::AbstractString,
     img::AbstractArray,
     nframes::Integer;
     rng::AbstractRNG=default_rng(),
     temperature::Integer=3,
 )
-    name = endswith(name, ".gif") ? name : name * ".gif"
+    gif_path = endswith(gif_path, ".gif") ? gif_path : gif_path * ".gif"
     return save(
-        name,
+        gif_path,
         reduce(
             deepfry(
                 img;
@@ -168,6 +171,11 @@ function fastfood(
             cat(x, y; dims=3) # Concatenate over the third dimension
         end,
     )
+end
+function fastfood(
+    gif_path::AbstractString, img_src::AbstractString, nframes::Integer; kwargs...
+)
+    return fastfood(gif_path, FileIO.load(img_src), nframes; kwargs...)
 end
 
 end
