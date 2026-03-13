@@ -16,11 +16,11 @@ using JpegTurbo
 using LinearAlgebra
 using Logging
 using LoggingExtras
-using MosaicViews: mosaicview
+using MosaicViews: mosaicview, mosaic
 using Random: default_rng, AbstractRNG, randexp, GLOBAL_RNG, Xoshiro
 using StaticArrays
 
-export fry, deepfry, nuke, fastfood
+export fry, deepfry, nuke, fastfood, nuggets
 export COLOR_FRYING, STRUCTURE_FRYING, STD_FRYING, FRYING
 
 include("utils.jl")
@@ -176,6 +176,43 @@ function fastfood(
     gif_path::AbstractString, img_src::AbstractString, nframes::Integer; kwargs...
 )
     return fastfood(gif_path, FileIO.load(img_src), nframes; kwargs...)
+end
+
+function nuggets(
+    img::AbstractArray,
+    frying_times=3,
+    temperature::Int=3,
+    grid::Tuple{Int,Int}=(3, 3);
+    kwargs...,
+)
+    return nuggets(
+        img,
+        ntuple(_ -> temperature, frying_times),
+        ntuple(_ -> grid, frying_times);
+        kwargs...,
+    )
+end
+function nuggets(
+    img::AbstractArray,
+    temperatures::NTuple{N,Int},
+    grids::NTuple{N,Tuple{Int,Int}};
+    rng::AbstractRNG=default_rng(),
+) where {N}
+    orig_size = size(img)
+    for i in 1:N
+        @info "Frying for the $(i)th time"
+        imgs = map(CartesianIndices(grids[i])) do _
+            deepfry(img; temperature=temperatures[i], rng)
+        end
+        mosaic_img = mosaic(collect(imgs)...; nrow=grids[i][1])
+        deep_img = deepfry(mosaic_img; temperature=temperatures[i], rng)
+        img = imresize(deep_img, orig_size)
+    end
+    return img
+end
+
+function nuggets(img_src::AbstractString, args...; kwargs...)
+    return nuggets(FileIO.load(img_src), args...; kwargs...)
 end
 
 end
