@@ -16,11 +16,11 @@ using JpegTurbo
 using LinearAlgebra
 using Logging
 using LoggingExtras
-using MosaicViews: mosaicview
+using MosaicViews: mosaicview, mosaic
 using Random: default_rng, AbstractRNG, randexp, GLOBAL_RNG, Xoshiro
 using StaticArrays
 
-export fry, deepfry, nuke, fastfood
+export fry, deepfry, nuke, fastfood, nuggets
 export COLOR_FRYING, STRUCTURE_FRYING, STD_FRYING, FRYING
 
 include("utils.jl")
@@ -57,11 +57,6 @@ const STRUCTURE_FRYING = Dict(
 const FRYING = [STRUCTURE_FRYING, COLOR_FRYING]
 
 """
-    deepfry(
-        img::AbstractMatrix{T}; 
-        rng::AbstractRNG=GLOBAL_RNG, temperature::Integer=5, nostalgia::Bool=false, verbosity::Integer=0
-    ) where {T<:Colorant}
-
 Take an image and apply a series of random filters to it.
 
 ## Keyword arguments
@@ -117,19 +112,17 @@ function deepfry(
     end
     return img
 end
+deepfry(img_src::AbstractString; kwargs...) = deepfry(FileIO.load(img_src; kwargs...))
 
 """
-    nuke(img::AbstractMatrix{T}; rng::AbstractRNG) where {T<:Colorant}
-
 Wrapper around [`deepfry`](@ref), forcing a temperature of `10`.
 """
-function nuke(img; rng::AbstractRNG=default_rng())
+function nuke(img::AbstractArray; rng::AbstractRNG=default_rng())
     return deepfry(img; rng, temperature=10, nostalgia=false)
 end
+nuke(img_src::AbstractString; kwargs...) = nuke(FileIO.load(img_src; kwargs...))
 
 """
-    fry(img::AbstractMatrix{T}; rng::AbstractRNG) where {T<:Colorant}
-
 Frying using a sequence of predetermined layers.
 Look at `DeepFry.STD_FRYING` for more details.
 """
@@ -138,6 +131,7 @@ function fry(img; rng::AbstractRNG=default_rng())
         f(img; rng)
     end
 end
+fry(img_src::AbstractString; kwargs...) = fry(FileIO.load(img_src; kwargs...))
 
 """
     fastfood(output::AbstractString, img::AbstractMatrix{<:Colorant}, nframes;
@@ -147,15 +141,15 @@ Build a gif in `output` from `img` by calling [`deepfry`](@ref) `nframes` times
 on `img` with the given `temperature`. 
 """
 function fastfood(
-    name::AbstractString,
+    gif_path::AbstractString,
     img::AbstractArray,
     nframes::Integer;
     rng::AbstractRNG=default_rng(),
     temperature::Integer=3,
 )
-    name = endswith(name, ".gif") ? name : name * ".gif"
+    gif_path = endswith(gif_path, ".gif") ? gif_path : gif_path * ".gif"
     return save(
-        name,
+        gif_path,
         reduce(
             deepfry(
                 img;
@@ -168,6 +162,59 @@ function fastfood(
             cat(x, y; dims=3) # Concatenate over the third dimension
         end,
     )
+end
+function fastfood(
+    gif_path::AbstractString, img_src::AbstractString, nframes::Integer; kwargs...
+)
+    return fastfood(gif_path, FileIO.load(img_src), nframes; kwargs...)
+end
+
+"""
+
+Recursively create multiple deepfried versions of an image and assemble them into a mosaic.
+"""
+function nuggets(
+    img::AbstractArray,
+    temperatures::NTuple{N,Int},
+    grids::NTuple{N,Tuple{Int,Int}};
+    rng::AbstractRNG=default_rng(),
+    gif_path::Union{Nothing,AbstractString}=nothing,
+) where {N}
+    orig_size = size(img)
+    buffer = isnothing(gif_path) ? nothing : []
+    foldl(zip(temperatures, grids); init=img) do img, (temperature, grid)
+        imgs = map(CartesianIndices(grid)) do _
+            deepfry(img; temperature=temperature, rng)
+        end
+        mosaic_img = mosaic(collect(imgs)...; nrow=grid[1])
+        img = imresize(mosaic_img, orig_size)
+        if !isnothing(buffer)
+            push!(buffer, img)
+        end
+        img
+    end
+    if !isnothing(buffer)
+        gif_path = endswith(gif_path, ".gif") ? gif_path : gif_path * ".gif"
+        save(gif_path, cat(buffer...; dims=3))
+    end
+    return img
+end
+function nuggets(
+    img::AbstractArray,
+    frying_times=3,
+    temperature::Int=3,
+    grid::Tuple{Int,Int}=(3, 3);
+    kwargs...,
+)
+    return nuggets(
+        img,
+        ntuple(_ -> temperature, frying_times),
+        ntuple(_ -> grid, frying_times);
+        kwargs...,
+    )
+end
+function nuggets(img_src::AbstractString, args...; kwargs...)
+    return nuggets(FileIO.load(img_src), args...; kwargs...)
 end
 
 end
