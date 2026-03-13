@@ -2,6 +2,7 @@ folder_to_fn = [
     "color_fry" => DeepFry.COLOR_FRYING,
     "standard_fry" => DeepFry.STD_FRYING,
     "struct_fry" => DeepFry.STRUCTURE_FRYING,
+    "nuggets" => ["Nuggets" => DeepFry.nuggets],
 ]
 
 for (folder, fns) in folder_to_fn
