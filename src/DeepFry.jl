@@ -57,11 +57,6 @@ const STRUCTURE_FRYING = Dict(
 const FRYING = [STRUCTURE_FRYING, COLOR_FRYING]
 
 """
-    deepfry(
-        img::AbstractMatrix{T}; 
-        rng::AbstractRNG=GLOBAL_RNG, temperature::Integer=5, nostalgia::Bool=false, verbosity::Integer=0
-    ) where {T<:Colorant}
-
 Take an image and apply a series of random filters to it.
 
 ## Keyword arguments
@@ -120,8 +115,6 @@ end
 deepfry(img_src::AbstractString; kwargs...) = deepfry(FileIO.load(img_src; kwargs...))
 
 """
-    nuke(img::AbstractMatrix{T}; rng::AbstractRNG) where {T<:Colorant}
-
 Wrapper around [`deepfry`](@ref), forcing a temperature of `10`.
 """
 function nuke(img::AbstractArray; rng::AbstractRNG=default_rng())
@@ -130,8 +123,6 @@ end
 nuke(img_src::AbstractString; kwargs...) = nuke(FileIO.load(img_src; kwargs...))
 
 """
-    fry(img::AbstractMatrix{T}; rng::AbstractRNG) where {T<:Colorant}
-
 Frying using a sequence of predetermined layers.
 Look at `DeepFry.STD_FRYING` for more details.
 """
@@ -178,6 +169,36 @@ function fastfood(
     return fastfood(gif_path, FileIO.load(img_src), nframes; kwargs...)
 end
 
+"""
+
+Recursively create multiple deepfried versions of an image and assemble them into a mosaic.
+"""
+function nuggets(
+    img::AbstractArray,
+    temperatures::NTuple{N,Int},
+    grids::NTuple{N,Tuple{Int,Int}};
+    rng::AbstractRNG=default_rng(),
+    gif_path::Union{Nothing,AbstractString}=nothing,
+) where {N}
+    orig_size = size(img)
+    buffer = isnothing(gif_path) ? nothing : []
+    foldl(zip(temperatures, grids); init=img) do img, (temperature, grid)
+        imgs = map(CartesianIndices(grid)) do _
+            deepfry(img; temperature=temperature, rng)
+        end
+        mosaic_img = mosaic(collect(imgs)...; nrow=grid[1])
+        img = imresize(mosaic_img, orig_size)
+        if !isnothing(buffer)
+            push!(buffer, img)
+        end
+        img
+    end
+    if !isnothing(buffer)
+        gif_path = endswith(gif_path, ".gif") ? gif_path : gif_path * ".gif"
+        save(gif_path, cat(buffer...; dims=3))
+    end
+    return img
+end
 function nuggets(
     img::AbstractArray,
     frying_times=3,
@@ -192,25 +213,6 @@ function nuggets(
         kwargs...,
     )
 end
-function nuggets(
-    img::AbstractArray,
-    temperatures::NTuple{N,Int},
-    grids::NTuple{N,Tuple{Int,Int}};
-    rng::AbstractRNG=default_rng(),
-) where {N}
-    orig_size = size(img)
-    for i in 1:N
-        @info "Frying for the $(i)th time"
-        imgs = map(CartesianIndices(grids[i])) do _
-            deepfry(img; temperature=temperatures[i], rng)
-        end
-        mosaic_img = mosaic(collect(imgs)...; nrow=grids[i][1])
-        deep_img = deepfry(mosaic_img; temperature=temperatures[i], rng)
-        img = imresize(deep_img, orig_size)
-    end
-    return img
-end
-
 function nuggets(img_src::AbstractString, args...; kwargs...)
     return nuggets(FileIO.load(img_src), args...; kwargs...)
 end
